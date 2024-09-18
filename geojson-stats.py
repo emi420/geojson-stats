@@ -14,6 +14,7 @@ import json
 from dataclasses import dataclass, field
 from pyproj import Geod
 from shapely.geometry import MultiLineString, Polygon, shape
+from urllib.request import Request, urlopen
 
 @dataclass
 class Config:
@@ -100,8 +101,8 @@ class GeoJSONStats:
             self.results.stats[DataUtils.key_area_km2(key)] += self.cache.way_area
 
     def calculate_area(self, json_object: object): 
-        if (json_object["geometry"]["type"] == "Polygon" \
-             or json_object["geometry"]["type"] == "MultiPolygon"):
+        if json_object["geometry"] and (json_object["geometry"]["type"] == "Polygon" \
+            or json_object["geometry"]["type"] == "MultiPolygon"):
             if not "area_km2" in self.results.stats:
                 self.results.stats["area_km2"] = self.geo_utils.way_area(json_object)
             else:
@@ -185,9 +186,21 @@ class GeoJSONStats:
             json_data = json.load(json_data)
             self.process_geojson(json_data)
 
+    def process_url(self, url: str):
+        if not self.config.silent:
+            print("Downloading file from URL ...\n")
+
+        req = Request(
+            url=url,
+            headers={'User-Agent': 'Mozilla/5.0'})
+
+        json_data = urlopen(req).read().decode('utf-8')
+        self.process_geojson(json.loads(json_data))
+
 def main():
     args = argparse.ArgumentParser()
     args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
+    args.add_argument("--url", "-u", help="URL of GeoJSON file to analyze", type=str, default=None)
     args.add_argument("--silent", "-s", help="Silent", default=False, action='store_true')
     args.add_argument("--stream", help="Stream a file (use less memory)", default=False, action='store_true')
     args.add_argument("--distance-keys", help="Keys for calculating distance in km", default = None)
@@ -201,23 +214,29 @@ def main():
     args.add_argument("--proj", help="Data projection system", default = "WGS84")
     args = args.parse_args()
 
-    if args.file:
-        if not args.silent:
-            print("\nFile size is {0} MB\n".format(round(os.stat(args.file).st_size / (1024 * 1024), 2)))
-        config = Config(
-            silent=args.silent,
-            distance_keys = args.distance_keys.split(",") if args.distance_keys else [],
-            area_keys = args.area_keys.split(",") if args.area_keys else [],
-            distance = args.distance,
-            area = args.area,
-            projected = args.projected,
-            proj = args.proj
-        )
-        stats = GeoJSONStats(config)
-        if args.stream:
-            stats.process_file_stream(args.file)
-        else:
-            stats.process_file(args.file)
+    config = Config(
+        silent=args.silent,
+        distance_keys = args.distance_keys.split(",") if args.distance_keys else [],
+        area_keys = args.area_keys.split(",") if args.area_keys else [],
+        distance = args.distance,
+        area = args.area,
+        projected = args.projected,
+        proj = args.proj
+    )
+    stats = GeoJSONStats(config)
+
+    if args.url or args.file:
+
+        if args.url:
+            stats.process_url(args.url)
+
+        elif args.file:
+            if not args.silent:
+                print("\nFile size is {0} MB\n".format(round(os.stat(args.file).st_size / (1024 * 1024), 2)))
+            if args.stream:
+                stats.process_file_stream(args.file)
+            else:
+                stats.process_file(args.file)
 
         print(json.dumps({
             "count": stats.results.count,
