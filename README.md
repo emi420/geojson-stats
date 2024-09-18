@@ -11,29 +11,47 @@ Stats for GeoJSON data
 
 ### Install requirements
 
-```sh
+```bash
 pip install pyproj shapely 
 ```
 
 ### Run
 
-```sh
+```bash
 python geojson-stats.py -f <GEOJSON FILE>
 ```
 
 ### Example
 
-```sh
+Getting stats from Turkmenistan Waterways (OpenStreetMap Export)
+downloaded from [HDX](https://data.humdata.org/dataset/hotosm_tkm_waterways)
+
+```bash
 python geojson-stats.py -f example/tkm_waterways.geojson
 ```
 
 ```json
-{"count": 4447, "stats": {"waterway": 4447, "source": 173, "osm_id": 4447, "osm_type": 4447, "km": 23318.87603608974, "layer": 821, "tunnel": 883, "name": 535, "name:en": 223, "name:tk": 99, "width": 94}}
+{
+  "count": 4447,
+  "stats": {
+    "waterway": 4447,
+    "source": 173,
+    "osm_id": 4447,
+    "osm_type": 4447,
+    "km": 23318.87603608974,
+    "layer": 821,
+    "tunnel": 883,
+    "name": 535,
+    "name:en": 223,
+    "name:tk": 99,
+    "width": 94
+  }
+}
 ```
 
 ## Usage
 
-```sh
+```bash
 geojson-stats.py [-h] [--file FILE] [--url URL] [--silent] [--stream] [--distance-keys DISTANCE_KEYS] [--area-keys AREA_KEYS]
                         [--distance] [--area] [--projected] [--proj PROJ]
 
