@@ -189,14 +189,14 @@ def main():
     args = argparse.ArgumentParser()
     args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
     args.add_argument("--silent", "-s", help="Silent", default=False, action='store_true')
-    args.add_argument("--stream", help="Stream a file", default=False, action='store_true')
+    args.add_argument("--stream", help="Stream a file (use less memory)", default=False, action='store_true')
     args.add_argument("--distance-keys", help="Keys for calculating distance in km", default = None)
     args.add_argument("--area-keys", help="Keys for calculating area in km2", default = None)
     args.add_argument("--distance", help="Calculate total distance of all linestrings", \
                     default=False, action='store_true')
     args.add_argument("--area", help="Calculate total area of all polygons", \
                     default=False, action='store_true')
-    args.add_argument("--projected", help="Use projected coordinated in meters instead of", \
+    args.add_argument("--projected", help="Use projected coordinated in meters", \
                     default=False, action='store_true')
     args.add_argument("--proj", help="Data projection system", default = "WGS84")
     args = args.parse_args()

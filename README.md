@@ -30,14 +30,14 @@ options:
   -h, --help            show this help message and exit
   --file FILE, -f FILE  GeoJSON file to analyze
   --silent, -s          Silent
-  --stream              Stream a file
+  --stream              Stream a file (use less memory)
   --distance-keys DISTANCE_KEYS
                         Keys for calculating distance in km
   --area-keys AREA_KEYS
                         Keys for calculating area in km2
   --distance            Calculate total distance of all linestrings
   --area                Calculate total area of all polygons
-  --projected           Use projected coordinated in meters instead of
+  --projected           Use projected coordinated in meters
   --proj PROJ           Data projection system
   ```
 
