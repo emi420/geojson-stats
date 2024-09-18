@@ -27,7 +27,7 @@ Getting stats from Turkmenistan Waterways (OpenStreetMap Export)
 downloaded from [HDX](https://data.humdata.org/dataset/hotosm_tkm_waterways)
 
 ```bash
-python geojson-stats.py -f example/tkm_waterways.geojson
+python geojson-stats.py -f example/tkm_waterways.geojson --distance
 ```
 
 ```json
