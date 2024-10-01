@@ -192,11 +192,14 @@ class Stats:
         json_data = urlopen(req).read().decode('utf-8')
         self.process_geojson(json.loads(json_data))
 
-    def dumps(self):
-        print(json.dumps({
+    def json(self):
+        return json.dumps({
             "count": self.results.count,
             "stats": self.results.stats
-        }))
+        })
+
+    def dump(self):
+        print(self.json())
 
 def main():
     args = argparse.ArgumentParser()

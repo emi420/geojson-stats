@@ -28,7 +28,10 @@ geojsonstats -f <GEOJSON FILE>
 ```py
 from geojson_stats.stats import Stats
 stats = Stats()
+stats.config.distance = True
 stats.process_file("example/tkm_waterways.geojson")
+print("Count:", stats.results.count)
+print("Stats:", stats.results.stats)
 ```
 
 ### Example
