@@ -17,13 +17,13 @@ Directly from the main branch:
 
 ~Latest on PyPi: pip install geojson-stats~
 
-### Command line
+### Usage
 
 ```bash
 geojsonstats -f <GEOJSON FILE>
 ```
 
-### Python
+#### Python
 
 ```py
 from geojson_stats.stats import Stats
