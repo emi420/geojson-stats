@@ -30,7 +30,7 @@ from urllib.request import Request, urlopen
 
 @dataclass
 class Config:
-    silent: bool = False
+    verbose: bool = True
     distance_keys: list = field(default_factory=lambda: [])
     area_keys: list = field(default_factory=lambda: [])
     distance: bool = False
@@ -82,7 +82,9 @@ class DataUtils:
 
 class GeoJSONStats:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config = None):
+        if config is None:
+            config = Config()
         self.config = config
         self.cache = CalcCache()
         self.results = StatsResults()
@@ -173,7 +175,7 @@ class GeoJSONStats:
         features_count = len(geojson_object["features"])
         for feature in geojson_object["features"]:
             self.get_object_stats(feature)
-            if not self.config.silent:
+            if self.config.verbose:
                 percent = round((self.results.count * 100) / features_count, 2)
                 print("Processed: {0}% ({1})".format(percent, self.results.count),\
                         end='\r', flush=True)
@@ -187,19 +189,19 @@ class GeoJSONStats:
             if line.startswith('{ "type": "Feature"'):
                 self.process_file_line(line)
                 percent = round((bytes_processed * 100) / bytes_total, 2)
-                if not self.config.silent:
+                if self.config.verbose:
                     print("Processed: {0}% ({1})".format(percent, self.results.count),\
                           end='\r', flush=True)
 
     def process_file(self, filename: str):
-        if not self.config.silent:
+        if self.config.verbose:
             print("Opening file ...\n")
         with open(filename, 'r') as json_data:
             json_data = json.load(json_data)
             self.process_geojson(json_data)
 
     def process_url(self, url: str):
-        if not self.config.silent:
+        if self.config.verbose:
             print("Downloading file from URL ...\n")
 
         req = Request(
@@ -213,7 +215,7 @@ def main():
     args = argparse.ArgumentParser()
     args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
     args.add_argument("--url", "-u", help="URL of GeoJSON file to analyze", type=str, default=None)
-    args.add_argument("--silent", "-s", help="Silent", default=False, action='store_true')
+    args.add_argument("--verbose", "-v", help="Verbose", default=False, action='store_true')
     args.add_argument("--stream", help="Stream a file (use less memory)", default=False, action='store_true')
     args.add_argument("--distance-keys", help="Keys for calculating distance in km", default = None)
     args.add_argument("--area-keys", help="Keys for calculating area in km2", default = None)
@@ -227,7 +229,7 @@ def main():
     args = args.parse_args()
 
     config = Config(
-        silent=args.silent,
+        verbose=args.verbose,
         distance_keys = args.distance_keys.split(",") if args.distance_keys else [],
         area_keys = args.area_keys.split(",") if args.area_keys else [],
         distance = args.distance,
@@ -243,7 +245,7 @@ def main():
             stats.process_url(args.url)
 
         elif args.file:
-            if not args.silent:
+            if args.verbose:
                 print("\nFile size is {0} MB\n".format(round(os.stat(args.file).st_size / (1024 * 1024), 2)))
             if args.stream:
                 stats.process_file_stream(args.file)
@@ -255,7 +257,7 @@ def main():
             "stats": stats.results.stats
         }))
 
-        if not args.silent:
+        if args.verbose:
             print('\nPeak Memory Usage =', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
             print('User Mode Time =', resource.getrusage(resource.RUSAGE_SELF).ru_utime)
             print('System Mode Time =', resource.getrusage(resource.RUSAGE_SELF).ru_stime)
