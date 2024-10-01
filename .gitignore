@@ -1,3 +1,17 @@
+# Python builds
+build
+dist
+*.pyc
+__pycache__
+
+# Docs
+site
+.cache
+
+# PDM
+pdm.toml
+.pdm-python
+__pypackages__
+
+# System files
 .DS_Store
-data
-venv
