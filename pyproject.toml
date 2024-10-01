@@ -98,4 +98,4 @@ ignore = ["N805", "B008"]
 convention = "google"
 
 [project.scripts]
-geojsonstats = "geojson_stats.stats:main"
+geojsonstats = "geojson_stats.cli:main"

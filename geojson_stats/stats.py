@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 
-import argparse
-import resource
 import os
 import json
 from dataclasses import dataclass, field
-from pyproj import Geod
-from shapely.geometry import MultiLineString, Polygon, shape
 from urllib.request import Request, urlopen
+from geoutils import GeoUtils
+from datautils import DataUtils
 
 @dataclass
 class Config:
@@ -39,45 +37,6 @@ class StatsResults:
 class CalcCache:
     way_length: float = None
     way_area: float = None
-
-# Utilities
-class GeoUtils:
-    def __init__(self, projected: bool, proj: str = "WGS84"):
-        self.projected = projected
-        self.proj = proj
-
-    # Calculate way's length in km
-    def way_length(self, way: object):
-        geo: dict = way["geometry"]
-        line: MultiLineString = shape(geo)
-        if self.projected:
-            length = line.length / 1000
-        else:
-            geod = Geod(ellps=self.proj)
-            length = geod.geometry_length(line) / 1000
-        return length 
-
-    # Calculate way's area in km2
-    def way_area(self, way: object):
-        geo: dict = way["geometry"]
-        polygon: Polygon = shape(geo)
-        if self.projected:
-            area = polygon.area / 1000000
-        else:
-            geod = Geod(ellps=self.proj)
-            area = abs(geod.geometry_area_perimeter(polygon)[0]) / 1000000
-        return area 
-
-# Utils for labelling
-class DataUtils:
-    KM_LABEL = "km"
-    KM2_LABEL = "area_km2"
-
-    def key_km(key: str):
-        return "{0}_{1}".format(key, DataUtils.KM_LABEL)
-
-    def key_area_km2(key):
-        return "{0}_{1}".format(key, DataUtils.KM2_LABEL)
 
 # Stats generator
 class Stats:
@@ -228,57 +187,3 @@ class Stats:
     def dump(self):
         print(self.json())
 
-# Entrypoint for command line
-def main():
-    args = argparse.ArgumentParser()
-    args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
-    args.add_argument("--url", "-u", help="URL of GeoJSON file to analyze", type=str, default=None)
-    args.add_argument("--verbose", "-v", help="Verbose", default=False, action='store_true')
-    args.add_argument("--stream", help="Stream a file (use less memory)", default=False, action='store_true')
-    args.add_argument("--distance-keys", help="Keys for calculating distance in km", default = None)
-    args.add_argument("--area-keys", help="Keys for calculating area in km2", default = None)
-    args.add_argument("--distance", help="Calculate total distance of all linestrings", \
-                    default=False, action='store_true')
-    args.add_argument("--area", help="Calculate total area of all polygons", \
-                    default=False, action='store_true')
-    args.add_argument("--projected", help="Use projected coordinated in meters", \
-                    default=False, action='store_true')
-    args.add_argument("--proj", help="Data projection system", default = "WGS84")
-    args = args.parse_args()
-
-    config = Config(
-        verbose=args.verbose,
-        distance_keys = args.distance_keys.split(",") if args.distance_keys else [],
-        area_keys = args.area_keys.split(",") if args.area_keys else [],
-        distance = args.distance,
-        area = args.area,
-        projected = args.projected,
-        proj = args.proj
-    )
-    stats = Stats(config)
-
-    if args.url or args.file:
-
-        if args.url:
-            stats.process_url(args.url)
-
-        elif args.file:
-            if args.verbose:
-                print("\nFile size is {0} MB\n".format(round(os.stat(args.file).st_size / (1024 * 1024), 2)))
-            if args.stream:
-                stats.process_file_stream(args.file)
-            else:
-                stats.process_file(args.file)
-
-        print(json.dumps({
-            "count": stats.results.count,
-            "stats": stats.results.stats
-        }))
-
-        if args.verbose:
-            print('\nPeak Memory Usage =', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-            print('User Mode Time =', resource.getrusage(resource.RUSAGE_SELF).ru_utime)
-            print('System Mode Time =', resource.getrusage(resource.RUSAGE_SELF).ru_stime)
-
-if __name__ == "__main__":
-    main()
