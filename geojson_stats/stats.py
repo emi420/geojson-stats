@@ -11,29 +11,42 @@ from urllib.request import Request, urlopen
 
 @dataclass
 class Config:
+    # Be verbose
     verbose: bool = False
+    # Keys used for calculate distance
     distance_keys: list = field(default_factory=lambda: [])
+    # Keys used for calculate area
     area_keys: list = field(default_factory=lambda: [])
+    # Enable/disable distance calculation
     distance: bool = False
+    # Enable/disable area calculation
     area: bool = False
+    # Use projected coordinates
     projected: bool = False
+    # Coordinates system
     proj: str = "WGS84"
 
+# Statistics results
 @dataclass
 class StatsResults:
+    # Total features count
     count: int = 0
+    # Stats for features
     stats: dict = field(default_factory=lambda: {})
 
+# Cache for storing calculations
 @dataclass
 class CalcCache:
     way_length: float = None
     way_area: float = None
 
+# Utilities
 class GeoUtils:
     def __init__(self, projected: bool, proj: str = "WGS84"):
         self.projected = projected
         self.proj = proj
 
+    # Calculate way's length in km
     def way_length(self, way: object):
         geo: dict = way["geometry"]
         line: MultiLineString = shape(geo)
@@ -44,6 +57,7 @@ class GeoUtils:
             length = geod.geometry_length(line) / 1000
         return length 
 
+    # Calculate way's area in km2
     def way_area(self, way: object):
         geo: dict = way["geometry"]
         polygon: Polygon = shape(geo)
@@ -54,13 +68,18 @@ class GeoUtils:
             area = abs(geod.geometry_area_perimeter(polygon)[0]) / 1000000
         return area 
 
+# Utils for labelling
 class DataUtils:
+    KM_LABEL = "km"
+    KM2_LABEL = "area_km2"
+
     def key_km(key: str):
-        return "{0}_km".format(key)
+        return "{0}_{1}".format(key, DataUtils.KM_LABEL)
 
     def key_area_km2(key):
-        return "{0}_area_km2".format(key)
+        return "{0}_{1}".format(key, DataUtils.KM2_LABEL)
 
+# Stats generator
 class Stats:
 
     def __init__(self, config: Config = None):
@@ -78,9 +97,11 @@ class Stats:
         for key in config.area_keys:
             self.results.stats[DataUtils.key_area_km2(key)] = 0
 
+    # Clean calculation cache
     def clean_cache(self):
         self.cache = self.cache = CalcCache()
 
+    # Process a line of a file
     def process_file_line(self, line: str):
         if line[-2:-1] == ",":
             json_string = line[:-2]
@@ -89,69 +110,70 @@ class Stats:
         json_object = json.loads(json_string)
         self.get_object_stats(json_object)
 
+    # Calculate area in km2 by key
     def calculate_area_bykey(self, json_object: object, key: str):
         if key in self.config.area_keys:
             if not self.cache.way_area:
                 self.cache.way_area = self.geo_utils.way_area(json_object)
             self.results.stats[DataUtils.key_area_km2(key)] += self.cache.way_area
 
+    # Calculate total area in km2
     def calculate_area(self, json_object: object): 
         if json_object["geometry"] and (json_object["geometry"]["type"] == "Polygon" \
             or json_object["geometry"]["type"] == "MultiPolygon"):
-            if not "area_km2" in self.results.stats:
-                self.results.stats["area_km2"] = self.geo_utils.way_area(json_object)
+            if not DataUtils.KM2_LABEL in self.results.stats:
+                self.results.stats[DataUtils.KM2_LABEL] = self.geo_utils.way_area(json_object)
             else:
-                self.results.stats["area_km2"] += self.geo_utils.way_area(json_object)
+                self.results.stats[DataUtils.KM2_LABEL] += self.geo_utils.way_area(json_object)
 
+    # Calculate distance in km by key
     def calculate_distance_bykey(self, json_object: object, key: str):
         if key in self.config.distance_keys:
             if not self.cache.way_length:
                 self.cache.way_length = self.geo_utils.way_length(json_object)
             self.results.stats[DataUtils.key_km(key)] += self.cache.way_length
 
+    # Calculate total distance in km
     def calculate_distance(self, json_object: object):
         if (json_object["geometry"]["type"] == "LineString" \
              or json_object["geometry"]["type"] == "MultiLineString"):
-            if not "km" in self.results.stats:
-                self.results.stats["km"] = self.geo_utils.way_length(json_object)
+            if not DataUtils.KM_LABEL in self.results.stats:
+                self.results.stats[DataUtils.KM_LABEL] = self.geo_utils.way_length(json_object)
             else:
-                self.results.stats["km"] += self.geo_utils.way_length(json_object)
+                self.results.stats[DataUtils.KM_LABEL] += self.geo_utils.way_length(json_object)
 
+    # Count property keys
     def count_keys(self, key: str):
         if key in self.results.stats:
             self.results.stats[key] += 1
         else:
             self.results.stats[key] = 1
 
+    # Get stats for a Feature object
     def get_object_stats(self, json_object: object):
         for prop in json_object["properties"].items():
             if prop[1]:
                 key = prop[0]
 
-                # Count keys
                 self.count_keys(key)
 
-                # Calculate distance per key
                 if self.config.distance_keys:
                     self.calculate_distance_bykey(json_object, key)
 
-                # Calculate area per key
                 if self.config.area_keys:
                     self.calculate_area_bykey(json_object, key)
 
-        # Calculate distance
         if self.config.distance:
             self.calculate_distance(json_object)
 
-        # Calculate area
         if self.config.area:
             self.calculate_area(json_object)
 
-        # Count features
         self.results.count += 1
 
         self.clean_cache()
 
+    # Process a GeoJSON object
     def process_geojson(self, geojson_object: object):
         features_count = len(geojson_object["features"])
         for feature in geojson_object["features"]:
@@ -161,6 +183,7 @@ class Stats:
                 print("Processed: {0}% ({1})".format(percent, self.results.count),\
                         end='\r', flush=True)
 
+    # Process a GeoJSON file line by line
     def process_file_stream(self, filename: str):
         file = open(filename)
         bytes_total = os.stat(filename).st_size
@@ -174,6 +197,7 @@ class Stats:
                     print("Processed: {0}% ({1})".format(percent, self.results.count),\
                           end='\r', flush=True)
 
+    # Process a GeoJSON file
     def process_file(self, filename: str):
         if self.config.verbose:
             print("Opening file ...\n")
@@ -181,6 +205,7 @@ class Stats:
             json_data = json.load(json_data)
             self.process_geojson(json_data)
 
+    # Process an URL
     def process_url(self, url: str):
         if self.config.verbose:
             print("Downloading file from URL ...\n")
@@ -192,15 +217,18 @@ class Stats:
         json_data = urlopen(req).read().decode('utf-8')
         self.process_geojson(json.loads(json_data))
 
+    # Returns a JSON string with the results
     def json(self):
         return json.dumps({
             "count": self.results.count,
             "stats": self.results.stats
         })
 
+    # Dumps results
     def dump(self):
         print(self.json())
 
+# Entrypoint for command line
 def main():
     args = argparse.ArgumentParser()
     args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
