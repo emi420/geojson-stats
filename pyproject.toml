@@ -1,6 +1,5 @@
 [project]
 name = "geojson-stats"
-dynamic = ["version"]
 description = "Stats for GeoJSON data"
 authors = [
     {name = "Emilio Mariscal", email = "emilio.mariscal@hotosm.org"},
