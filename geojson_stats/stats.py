@@ -1,24 +1,5 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2024 Humanitarian OpenStreetMap Team
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# Humanitarian OpenStreetmap Team
-# 1100 13th Street NW Suite 800 Washington, D.C. 20005
-# <info@hotosm.org>
-
 import argparse
 import resource
 import os
@@ -30,7 +11,7 @@ from urllib.request import Request, urlopen
 
 @dataclass
 class Config:
-    verbose: bool = True
+    verbose: bool = False
     distance_keys: list = field(default_factory=lambda: [])
     area_keys: list = field(default_factory=lambda: [])
     distance: bool = False
@@ -80,7 +61,7 @@ class DataUtils:
     def key_area_km2(key):
         return "{0}_area_km2".format(key)
 
-class GeoJSONStats:
+class Stats:
 
     def __init__(self, config: Config = None):
         if config is None:
@@ -211,6 +192,12 @@ class GeoJSONStats:
         json_data = urlopen(req).read().decode('utf-8')
         self.process_geojson(json.loads(json_data))
 
+    def dumps(self):
+        print(json.dumps({
+            "count": self.results.count,
+            "stats": self.results.stats
+        }))
+
 def main():
     args = argparse.ArgumentParser()
     args.add_argument("--file", "-f", help="GeoJSON file to analyze", type=str, default=None)
@@ -237,7 +224,7 @@ def main():
         projected = args.projected,
         proj = args.proj
     )
-    stats = GeoJSONStats(config)
+    stats = Stats(config)
 
     if args.url or args.file:
 

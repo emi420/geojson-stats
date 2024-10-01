@@ -9,16 +9,26 @@ Stats for GeoJSON data
 
 ## Quick start
 
-### Install requirements
+### Install
+
+Directly from the main branch:
+
+`pip install git+https://github.com/emi420/geojson-stats`
+
+~Latest on PyPi: pip install geojson-stats~
+
+### Command line
 
 ```bash
-pip install pyproj shapely 
+geojsonstats -f <GEOJSON FILE>
 ```
 
-### Run
+### Python
 
-```bash
-python geojson-stats.py -f <GEOJSON FILE>
+```py
+from geojson_stats.stats import Stats
+stats = Stats()
+stats.process_file("example/tkm_waterways.geojson")
 ```
 
 ### Example
@@ -27,7 +37,7 @@ Getting stats from Turkmenistan Waterways (OpenStreetMap Export)
 downloaded from [HDX](https://data.humdata.org/dataset/hotosm_tkm_waterways)
 
 ```bash
-python geojson-stats.py -f example/tkm_waterways.geojson --distance
+geojsonstats -f example/tkm_waterways.geojson --distance
 ```
 
 ```json
@@ -52,14 +62,14 @@ python geojson-stats.py -f example/tkm_waterways.geojson --distance
 ## Usage
 
 ```bash
-geojson-stats.py [-h] [--file FILE] [--url URL] [--silent] [--stream] [--distance-keys DISTANCE_KEYS] [--area-keys AREA_KEYS]
+geojsonstats [-h] [--file FILE] [--url URL] [--verbose] [--stream] [--distance-keys DISTANCE_KEYS] [--area-keys AREA_KEYS]
                         [--distance] [--area] [--projected] [--proj PROJ]
 
 options:
   -h, --help            show this help message and exit
   --file FILE, -f FILE  GeoJSON file to analyze
   --url URL, -u URL     URL of GeoJSON file to analyze
-  --silent, -s          Silent
+  --verbose, -s          Verbose
   --stream              Stream a file (use less memory)
   --distance-keys DISTANCE_KEYS
                         Keys for calculating distance in km
