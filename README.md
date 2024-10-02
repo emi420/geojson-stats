@@ -34,14 +34,17 @@ geojsonstats -h
 
 ```py
 from geojson_stats.stats import Stats, Config
+
 config = Config(
   clean = True,
   length = True,
   keys=["waterway"]
   value_keys=["waterway"]
 )
+
 stats = Stats(config)
 stats.process_file("example/tkm_waterways.geojson")
+
 print("Count:", stats.results.count)
 stats.dump()
 ```
