@@ -50,7 +50,7 @@ class Stats:
 
     # Calculate length in km by key value
     def calculate_length_bykeyval(self, json_object: object, key: str, val: str):
-        if key in self.config.value_keys:
+        if val and key in self.config.value_keys:
             self.results.bykeyvalue(key, val).sum_length(self.geo_utils.way_length(json_object))
 
     # Calculate area in km2 by key
@@ -62,7 +62,7 @@ class Stats:
 
     # Calculate area in km2 by key value
     def calculate_area_bykeyval(self, json_object: object, key: str, val: str):
-        if key in self.config.value_keys:
+        if val and key in self.config.value_keys:
             self.results.bykeyvalue(key, val).sum_area(self.geo_utils.way_area(json_object))
 
     # Calculate total length in km
