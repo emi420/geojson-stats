@@ -105,13 +105,6 @@ python geojson_stats/cli.py -f example/tkm_waterways.geojson --keys waterway --v
         }
       }
     },
-    "water": {
-      "value": {
-        "null": {
-          "length": 23318.876036089594
-        }
-      }
-    },
     "source": {
       "count": 173
     },
