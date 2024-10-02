@@ -32,7 +32,7 @@ class Stats:
 
     # Count value by key
     def count_value_bykey(self, json_object: object, key: str, value: str):
-        if key in self.config.value_keys:
+        if value and key in self.config.value_keys:
             self.results.bykeyvalue(key, value).sum()
 
     # Calculate total area in km2
@@ -78,20 +78,21 @@ class Stats:
     # Get stats for a Feature object
     def get_object_stats(self, json_object: object):
         for prop in json_object["properties"].items():
-            self.total_keys(prop[0])
+            if prop[1]:
+                self.total_keys(prop[0])
 
-            if self.config.keys:
+            if self.config.keys and prop[0] in self.config.keys:
                 if self.config.length:
                     self.calculate_length_bykey(json_object, prop[0])
                 if self.config.area:
                     self.calculate_area_bykey(json_object, prop[0])
 
-            if self.config.value_keys:
+            if self.config.value_keys and prop[0] in self.config.value_keys:
                 self.count_value_bykey(json_object, prop[0], prop[1])
-                if self.config.length:
-                    self.calculate_length_bykeyval(json_object, prop[0], prop[1])
-                if self.config.area:
-                    self.calculate_area_bykeyval(json_object, prop[0], prop[1])
+                # if self.config.length:
+                #     self.calculate_length_bykeyval(json_object, prop[0], prop[1])
+                # if self.config.area:
+                #     self.calculate_area_bykeyval(json_object, prop[0], prop[1])
 
         if self.config.length:
             self.calculate_length(json_object)
