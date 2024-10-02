@@ -89,10 +89,10 @@ class Stats:
 
             if self.config.value_keys and prop[0] in self.config.value_keys:
                 self.count_value_bykey(json_object, prop[0], prop[1])
-                # if self.config.length:
-                #     self.calculate_length_bykeyval(json_object, prop[0], prop[1])
-                # if self.config.area:
-                #     self.calculate_area_bykeyval(json_object, prop[0], prop[1])
+                if self.config.length:
+                    self.calculate_length_bykeyval(json_object, prop[0], prop[1])
+                if self.config.area:
+                    self.calculate_area_bykeyval(json_object, prop[0], prop[1])
 
         if self.config.length:
             self.calculate_length(json_object)
