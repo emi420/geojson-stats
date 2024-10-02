@@ -1,11 +1,12 @@
 # geojson-stats
 
-Stats for GeoJSON data
+Stats for GeoJSON data 
 
-- Total features count
-- Properties count
-- Distance for lines (total / per property)
-- Area for polygons (total / per property)
+(total / per property / per value)
+
+- Features count
+- Length for lines 
+- Area for polygons
 
 ## Quick start
 
