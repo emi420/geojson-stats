@@ -38,7 +38,7 @@ from geojson_stats.stats import Stats, Config
 config = Config(
   clean = True,
   length = True,
-  keys=["waterway"]
+  keys=["waterway"],
   value_keys=["waterway"]
 )
 
