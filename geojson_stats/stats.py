@@ -1,8 +1,8 @@
 import os
 import json
 from urllib.request import Request, urlopen
-from geoutils import GeoUtils
-from models import *
+from .geoutils import GeoUtils
+from .models import *
 
 # Stats generator
 class Stats:

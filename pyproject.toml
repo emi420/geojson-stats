@@ -35,7 +35,7 @@ addopts = "-ra -q -p no:warnings"
 testpaths = [
     "tests",
 ]
-pythonpath = "geojson-stats"
+pythonpath = "geojson_stats"
 log_cli = true
 log_cli_level = "DEBUG"
 

@@ -4,7 +4,7 @@ import argparse
 import resource
 import os
 
-from stats import Config, Stats
+from .stats import Config, Stats
 
 # Entrypoint for command line
 def main():
