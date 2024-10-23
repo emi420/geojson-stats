@@ -17,6 +17,18 @@ class Stats:
             projected=self.config.projected
         )
 
+    # Get property from tag
+    def getProperty(self, path: str, obj: dict):
+        keys = path.split('.')
+        value = obj
+        
+        for key in keys:
+            value = value.get(key)
+            if value is None:
+                return None
+        
+        return value
+
     # Clean calculation cache
     def clean_cache(self):
         self.cache = self.cache = CalcCache()
@@ -77,7 +89,7 @@ class Stats:
 
     # Get stats for a Feature object
     def get_object_stats(self, json_object: object):
-        for prop in json_object["properties"].items():
+        for prop in self.getProperty(self.config.properties_prop, json_object).items():
             if prop[1]:
                 self.total_keys(prop[0])
 

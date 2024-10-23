@@ -15,3 +15,6 @@ __pypackages__
 
 # System files
 .DS_Store
+
+# Virtual envs
+venv

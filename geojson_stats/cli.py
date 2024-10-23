@@ -13,16 +13,17 @@ def main():
     args.add_argument("--url", "-u", help="URL of GeoJSON file to analyze", type=str, default=None)
     args.add_argument("--verbose", "-v", help="Verbose", default=False, action='store_true')
     args.add_argument("--stream", help="Stream a file (use less memory)", default=False, action='store_true')
-    args.add_argument("--keys", help="Keys for calculating length or area", default = None)
-    args.add_argument("--value-keys", help="Keys for counting values", default = None)
+    args.add_argument("--keys", help="Keys for calculating length or area", type=str, default = None)
+    args.add_argument("--value-keys", help="Keys for counting values", type=str, default = None)
     args.add_argument("--length", help="Calculate total length of all linestrings", \
                     default=False, action='store_true')
     args.add_argument("--area", help="Calculate total area of all polygons", \
                     default=False, action='store_true')
     args.add_argument("--projected", help="Use projected coordinated in meters", \
                     default=False, action='store_true')
-    args.add_argument("--proj", help="Data projection system", default = "WGS84")
+    args.add_argument("--proj", help="Data projection system", type=str, default = "WGS84")
     args.add_argument("--no-clean", help="Keep zero and empty results", default=False, action='store_true')
+    args.add_argument("--properties-prop", help="Properties to analyze (ex: properties or properties.tags)", type=str, default="properties")
     args = args.parse_args()
 
     config = Config(
@@ -33,7 +34,8 @@ def main():
         value_keys = args.value_keys,
         projected = args.projected,
         clean = not args.no_clean,
-        proj = args.proj
+        proj = args.proj,
+        properties_prop = args.properties_prop
     )
     stats = Stats(config)
 

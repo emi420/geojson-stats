@@ -18,6 +18,9 @@ class Config:
     clean: bool = False
     # Coordinates system
     proj: str = "WGS84"
+    # Properties to analyze (ex: "properties" or "properties.tags")
+    properties_prop: str = "properties"
+
 
 # Base stats class
 @dataclass
