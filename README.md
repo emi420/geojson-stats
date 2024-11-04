@@ -14,9 +14,9 @@ Stats for GeoJSON data
 
 Directly from the main branch:
 
-`pip install git+https://github.com/emi420/geojson-stats`
-
-~Latest on PyPi: pip install geojson-stats~
+```bash
+pip install geojson-stats
+```
 
 ### Usage
 
