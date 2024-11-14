@@ -5,6 +5,7 @@ import resource
 import os
 
 from .stats import Config, Stats
+from .html import HtmlStats
 
 # Entrypoint for command line
 def main():
@@ -24,6 +25,7 @@ def main():
     args.add_argument("--proj", help="Data projection system", type=str, default = "WGS84")
     args.add_argument("--no-clean", help="Keep zero and empty results", default=False, action='store_true')
     args.add_argument("--properties-prop", help="Properties to analyze (ex: properties or properties.tags)", type=str, default="properties")
+    args.add_argument("--html", help="HTML template", type=str, default=None)
     args = args.parse_args()
 
     config = Config(
@@ -52,7 +54,11 @@ def main():
             else:
                 stats.process_file(args.file)
 
-        stats.dump()
+        if args.html:
+            htmlStats = HtmlStats(args.html, stats)
+            print(htmlStats.html())
+        else:
+            stats.dump()
 
         if args.verbose:
             print('\nPeak Memory Usage =', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)

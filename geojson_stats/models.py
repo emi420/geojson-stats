@@ -63,9 +63,10 @@ class ValueStats(BaseStats):
 class KeyStats(BaseStats):
     value: dict = field(default_factory=lambda: {})
 
-    def to_dict(self, clean = False):
+    def to_dict(self, clean = False, total = 1):
         res = {
             "count": self.count,
+            "percent": round(self.count * 100 / total, 2),
             "area": self.area,
             "length": self.length,
             "value": {k:v.to_dict(clean) for k, v in self.value.items()}
@@ -85,6 +86,7 @@ class KeyStats(BaseStats):
 @dataclass
 class TotalStats(BaseStats):
     key: dict = field(default_factory=lambda: {})
+    languages: list = field(default_factory=lambda: [])
 
     def bykey(self, key: str):
         if key not in self.key:
@@ -102,7 +104,11 @@ class TotalStats(BaseStats):
             "count": self.count,
             "area": self.area,
             "length": self.length,
-            "key": {k:v.to_dict(clean) for k, v in self.key.items()}
+            "languages": {
+                "list": self.languages,
+                "count": len(self.languages),
+            },
+            "key": {k:v.to_dict(clean, self.count) for k, v in self.key.items()}
         }
         if clean:
             if res["count"] == 0:
@@ -111,6 +117,7 @@ class TotalStats(BaseStats):
                 del res["area"]
             if res["length"] == 0:
                 del res["length"]
+        res["key"] = dict(sorted(res["key"].items(), key=lambda x: x[1]["count"], reverse=True))
         return res
 
 

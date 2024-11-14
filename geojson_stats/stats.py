@@ -90,21 +90,31 @@ class Stats:
     # Get stats for a Feature object
     def get_object_stats(self, json_object: object):
         for prop in self.getProperty(self.config.properties_prop, json_object).items():
-            if prop[1]:
-                self.total_keys(prop[0])
+            key = prop[0]
+            value = prop[1]
+
+            if value:
+                self.total_keys(key)
 
             if self.config.keys and prop[0] in self.config.keys:
                 if self.config.length:
-                    self.calculate_length_bykey(json_object, prop[0])
+                    self.calculate_length_bykey(json_object,key)
                 if self.config.area:
-                    self.calculate_area_bykey(json_object, prop[0])
+                    self.calculate_area_bykey(json_object, key)
 
-            if self.config.value_keys and prop[0] in self.config.value_keys:
-                self.count_value_bykey(json_object, prop[0], prop[1])
+            if self.config.value_keys and key in self.config.value_keys:
+                self.count_value_bykey(json_object, key, value)
                 if self.config.length:
-                    self.calculate_length_bykeyval(json_object, prop[0], prop[1])
+                    self.calculate_length_bykeyval(json_object, key, value)
                 if self.config.area:
-                    self.calculate_area_bykeyval(json_object, prop[0], prop[1])
+                    self.calculate_area_bykeyval(json_object, key, value)
+
+            if key == "name" and not "name" in self.results.languages:
+                self.results.languages.append("name")
+
+            if len(key) == 7 and "name:" in key and key.index("name:") == 0:
+                if not key in self.results.languages:
+                    self.results.languages.append(key)
 
         if self.config.length:
             self.calculate_length(json_object)
@@ -162,9 +172,11 @@ class Stats:
 
     # Returns a JSON string with the results
     def json(self):
-        return json.dumps(self.results.to_dict(clean=self.config.clean))
+        return json.dumps(self.dict())
 
     # Dumps results
     def dump(self):
         print(self.json())
 
+    def dict(self):
+        return self.results.to_dict(clean=self.config.clean)
