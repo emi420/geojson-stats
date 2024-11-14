@@ -154,6 +154,17 @@ geojsonstats -f example/tkm_waterways.geojson --keys waterway --value-keys water
 }
 ```
 
+### HTML
+
+You can also generate stats in HTML format, using a template.
+
+For example:
+
+```bash
+geojsonstats -f example/tkm_waterways.geojson --keys waterway --value-keys waterway --length --html example/waterway_stats_tpl.html > stats.htm
+```
+<img width="906" alt="Screenshot 2024-11-14 at 00 01 26" src="https://github.com/user-attachments/assets/b50a1c26-0126-4f57-8516-7d02343d6a6e">
+
 ## License
 
 GNU Affero General Public License
