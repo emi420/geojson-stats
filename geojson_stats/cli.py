@@ -5,7 +5,7 @@ import resource
 import os
 
 from .stats import Config, Stats
-from .html import HtmlStats
+from .html import Html
 
 # Entrypoint for command line
 def main():
@@ -55,8 +55,8 @@ def main():
                 stats.process_file(args.file)
 
         if args.html:
-            htmlStats = HtmlStats(args.html, stats)
-            print(htmlStats.html())
+            html = Html(args.html, stats)
+            html.dump()
         else:
             stats.dump()
 

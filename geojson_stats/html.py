@@ -19,7 +19,7 @@ def get_val(d, k):
     return d
 
 # Create HTML reports with stats
-class HtmlStats:
+class Html:
 
     tpl: str = ""
     stats: TotalStats
@@ -31,7 +31,7 @@ class HtmlStats:
         with open(tpl_file, 'r') as tpl_html:
             self.tpl = tpl_html.read()
 
-    def html(self):
+    def build(self):
         matches = re.findall(TPL_VAR_PATTERN, self.tpl)
         replacements = {}
         for match in matches:
@@ -42,3 +42,6 @@ class HtmlStats:
         
         template = Template(self.tpl)
         return template.substitute(replacements)
+
+    def dump(self):
+        print(self.build())
