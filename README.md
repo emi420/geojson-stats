@@ -55,16 +55,25 @@ Getting stats from Turkmenistan Waterways (OpenStreetMap Export)
 downloaded from [HDX](https://data.humdata.org/dataset/hotosm_tkm_waterways)
 
 ```bash
-python geojson_stats/cli.py -f example/tkm_waterways.geojson --keys waterway --value-keys waterway --length --verbose
+geojsonstats -f example/tkm_waterways.geojson --keys waterway --value-keys waterway --length --verbose
 ```
 
 ```json
 {
   "count": 4447,
   "length": 23318.876036089594,
+  "languages": {
+    "list": [
+      "name",
+      "name:en",
+      "name:tk"
+    ],
+    "count": 3
+  },
   "key": {
     "waterway": {
       "count": 4447,
+      "percent": 100.0,
       "length": 23318.876036089594,
       "value": {
         "canal": {
@@ -105,32 +114,41 @@ python geojson_stats/cli.py -f example/tkm_waterways.geojson --keys waterway --v
         }
       }
     },
-    "source": {
-      "count": 173
-    },
     "osm_id": {
-      "count": 4447
+      "count": 4447,
+      "percent": 100.0
     },
     "osm_type": {
-      "count": 4447
-    },
-    "layer": {
-      "count": 821
+      "count": 4447,
+      "percent": 100.0
     },
     "tunnel": {
-      "count": 883
+      "count": 883,
+      "percent": 19.86
+    },
+    "layer": {
+      "count": 821,
+      "percent": 18.46
     },
     "name": {
-      "count": 535
+      "count": 535,
+      "percent": 12.03
     },
     "name:en": {
-      "count": 223
+      "count": 223,
+      "percent": 5.01
+    },
+    "source": {
+      "count": 173,
+      "percent": 3.89
     },
     "name:tk": {
-      "count": 99
+      "count": 99,
+      "percent": 2.23
     },
     "width": {
-      "count": 94
+      "count": 94,
+      "percent": 2.11
     }
   }
 }
