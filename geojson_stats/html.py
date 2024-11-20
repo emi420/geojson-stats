@@ -9,13 +9,21 @@ def get_val(d, k):
     for key in keys:
         if key.isdigit():
             if key == keys[-1]:
-                return list(d.keys())[int(key)]
+                try:
+                    return list(d.keys())[int(key)]
+                except:
+                    return "-"
             else:
-                d = d[list(d.keys())[int(key)]]
+                try:
+                    d = d[list(d.keys())[int(key)]]
+                except:
+                    return "-"
         elif isinstance(d, dict) and key in d:
             d = d[key]
         else:
             return None
+    if key == "percent":
+        return "{d}%".format(d=d)
     return d
 
 # Create HTML reports with stats
