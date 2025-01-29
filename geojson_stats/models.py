@@ -20,6 +20,8 @@ class Config:
     proj: str = "WGS84"
     # Properties to analyze (ex: "properties" or "properties.tags")
     properties_prop: str = "properties"
+    # Extra params for HTML templates
+    html_params: str = None
 
 
 # Base stats class
@@ -33,10 +35,10 @@ class BaseStats:
         self.count += 1
 
     def sum_length(self, length: float = 0):
-        self.length += length
+        self.length += length or 0
 
     def sum_area(self, area: float = 0):
-        self.area += area
+        self.area += area or 0
 
     def to_dict(self, clean = False):
         res = {

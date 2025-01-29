@@ -31,10 +31,12 @@ class Html:
 
     tpl: str = ""
     stats: TotalStats
+    extra: dict = None
 
-    def __init__(self, tpl_file: str, stats: TotalStats):
+    def __init__(self, tpl_file: str, stats: TotalStats, extra_params = dict):
         self.tpl_file = tpl_file
         self.stats = stats.dict()
+        self.extra_params = extra_params
 
         with open(tpl_file, 'r') as tpl_html:
             self.tpl = tpl_html.read()
@@ -47,6 +49,9 @@ class Html:
             if isinstance(value, float):
                 value = round(value, 2)
             replacements[match] = value
+            
+            if match in self.extra_params:
+                replacements[match] = self.extra_params.get(match)
         
         template = Template(self.tpl)
         return template.substitute(replacements)

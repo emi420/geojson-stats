@@ -26,6 +26,7 @@ def main():
     args.add_argument("--no-clean", help="Keep zero and empty results", default=False, action='store_true')
     args.add_argument("--properties-prop", help="Properties to analyze (ex: properties or properties.tags)", type=str, default="properties")
     args.add_argument("--html", help="HTML template", type=str, default=None)
+    args.add_argument("--html-params", help="Extra parameters for the HTML template", type=str, default=None)
     args = args.parse_args()
 
     config = Config(
@@ -37,7 +38,8 @@ def main():
         projected = args.projected,
         clean = not args.no_clean,
         proj = args.proj,
-        properties_prop = args.properties_prop
+        properties_prop = args.properties_prop,
+        html_params = args.html_params
     )
     stats = Stats(config)
 
@@ -55,7 +57,14 @@ def main():
                 stats.process_file(args.file)
 
         if args.html:
-            html = Html(args.html, stats)
+            html_params = None
+            if args.html_params:
+                html_params = {}
+                html_params_arr = args.html_params.split(",")
+                for item in html_params_arr:
+                    item_keyval = item.split("=")
+                    html_params[item_keyval[0]] = item_keyval[1]
+            html = Html(args.html, stats, html_params)
             html.dump()
         else:
             stats.dump()
