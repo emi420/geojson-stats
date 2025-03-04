@@ -50,7 +50,7 @@ class Html:
                 value = round(value, 2)
             replacements[match] = value
             
-            if match in self.extra_params:
+            if self.extra_params and match in self.extra_params:
                 replacements[match] = self.extra_params.get(match)
         
         template = Template(self.tpl)
