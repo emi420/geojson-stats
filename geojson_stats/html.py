@@ -21,7 +21,7 @@ def get_val(d, k):
         elif isinstance(d, dict) and key in d:
             d = d[key]
         else:
-            return None
+            return "-"
     if key == "percent":
         return "{d}%".format(d=d)
     return d
@@ -33,7 +33,7 @@ class Html:
     stats: TotalStats
     extra: dict = None
 
-    def __init__(self, tpl_file: str, stats: TotalStats, extra_params = dict):
+    def __init__(self, tpl_file: str, stats: TotalStats, extra_params: dict = {}):
         self.tpl_file = tpl_file
         self.stats = stats.dict()
         self.extra_params = extra_params
@@ -50,9 +50,9 @@ class Html:
                 value = round(value, 2)
             replacements[match] = value
             
-            if self.extra_params and match in self.extra_params:
+            if match in self.extra_params:
                 replacements[match] = self.extra_params.get(match)
-        
+
         template = Template(self.tpl)
         return template.substitute(replacements)
 
