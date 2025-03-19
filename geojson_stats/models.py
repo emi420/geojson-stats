@@ -112,6 +112,7 @@ class TotalStats(BaseStats):
             },
             "key": {k:v.to_dict(clean, self.count) for k, v in self.key.items()}
         }
+        res["key"] = dict(sorted(res["key"].items(), key=lambda x: x[1]["count"], reverse=True))
         if clean:
             if res["count"] == 0:
                 del res["count"]
@@ -119,7 +120,6 @@ class TotalStats(BaseStats):
                 del res["area"]
             if res["length"] == 0:
                 del res["length"]
-        res["key"] = dict(sorted(res["key"].items(), key=lambda x: x[1]["count"], reverse=True))
         return res
 
 

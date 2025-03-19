@@ -9,7 +9,9 @@ config = Config(
 )
 
 stats = Stats(config)
-stats.process_file("./tkm_waterways.geojson")
+stats.process_file("example/tkm_waterways.geojson")
 
-html = Html("./waterway_stats_tpl.html", stats)
+# stats.dump()
+
+html = Html("example/waterway_stats_tpl.html", stats)
 html.dump()
